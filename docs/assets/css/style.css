@@ -1,0 +1,384 @@
+/* ============================================================
+   Training Notes — clean & readable
+   - 単一アクセント（テラコッタ）+ ニュートラル
+   - 装飾は最小、可読性を最優先
+   ============================================================ */
+
+:root {
+  --c-bg:        #fbfaf7;
+  --c-surface:   #ffffff;
+  --c-surface-2: #f5f2ed;
+  --c-border:    #e6e1d9;
+  --c-border-2:  #efeae2;
+
+  --c-text:      #1f2328;
+  --c-text-soft: #5b6168;
+  --c-muted:     #8a8f97;
+
+  --c-accent:        #b85450;   /* terracotta */
+  --c-accent-strong: #9a3f3c;
+  --c-accent-soft:   #f4e6e2;
+
+  --c-link: #9a3f3c;
+
+  --header-h: 56px;
+  --bottom-nav-h: 60px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+
+  --content-max: 720px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", Meiryo,
+    "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom));
+}
+
+a {
+  color: var(--c-link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+a:hover { color: var(--c-accent); }
+
+/* ===== Header ===== */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+}
+.app-header__inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: var(--header-h);
+}
+.app-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.app-header__logo {
+  font-size: 20px;
+}
+.app-header__text { line-height: 1.2; }
+.app-header__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--c-text);
+}
+.app-header__subtitle {
+  margin: 0;
+  font-size: 0.7rem;
+  color: var(--c-muted);
+  letter-spacing: 0.06em;
+}
+
+/* Top nav (desktop) */
+.top-nav { display: none; }
+.top-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 4px;
+}
+.top-nav__btn {
+  padding: 6px 14px;
+  background: transparent;
+  border: 0;
+  color: var(--c-text-soft);
+  font: inherit;
+  font-size: 0.92rem;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+.top-nav__btn:hover { color: var(--c-text); background: var(--c-surface-2); }
+.top-nav__btn[aria-current="page"] {
+  color: var(--c-accent-strong);
+  font-weight: 700;
+  background: var(--c-accent-soft);
+}
+
+/* ===== Main ===== */
+.main {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 20px 18px 40px;
+}
+
+.content {
+  background: transparent;
+}
+
+.loading {
+  text-align: center;
+  padding: 48px 0;
+  color: var(--c-muted);
+  font-size: 0.92rem;
+}
+
+/* ===== Markdown rendering ===== */
+.content h1,
+.content h2,
+.content h3,
+.content h4 {
+  line-height: 1.5;
+  color: var(--c-text);
+  font-weight: 700;
+}
+
+.content h1 {
+  margin: 0 0 24px;
+  padding-bottom: 14px;
+  font-size: 1.6rem;
+  border-bottom: 2px solid var(--c-accent);
+  letter-spacing: 0.01em;
+}
+
+.content h2 {
+  margin: 44px 0 14px;
+  font-size: 1.2rem;
+  padding-left: 10px;
+  border-left: 3px solid var(--c-accent);
+}
+
+.content h3 {
+  margin: 28px 0 8px;
+  font-size: 1.02rem;
+  color: var(--c-accent-strong);
+}
+
+.content h4 {
+  margin: 18px 0 6px;
+  font-size: 0.96rem;
+  color: var(--c-text-soft);
+}
+
+.content p { margin: 12px 0; }
+
+.content blockquote {
+  margin: 16px 0;
+  padding: 10px 14px;
+  background: var(--c-surface-2);
+  border-left: 3px solid var(--c-border);
+  color: var(--c-text-soft);
+  font-size: 0.94rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.content blockquote p { margin: 4px 0; }
+
+.content ul,
+.content ol {
+  padding-left: 1.4em;
+  margin: 12px 0;
+}
+.content li { margin: 4px 0; }
+
+.content code {
+  background: var(--c-surface-2);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--c-accent-strong);
+}
+.content pre {
+  background: #1f2328;
+  color: #e6e1d9;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+.content pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.content hr {
+  border: 0;
+  border-top: 1px solid var(--c-border);
+  margin: 28px 0;
+}
+
+.content strong { color: var(--c-text); font-weight: 700; }
+
+/* ===== Tables ===== */
+.table-wrap {
+  margin: 14px 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+}
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 480px;
+  font-size: 0.92rem;
+}
+.content thead th {
+  background: var(--c-surface-2);
+  color: var(--c-text);
+  text-align: left;
+  padding: 10px 12px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--c-border);
+  white-space: nowrap;
+}
+.content tbody td,
+.content tbody th {
+  padding: 10px 12px;
+  border-top: 1px solid var(--c-border-2);
+  vertical-align: top;
+  text-align: left;
+  font-weight: normal;
+}
+
+/* Task list checkboxes */
+.content input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--c-muted);
+  border-radius: 3px;
+  margin-right: 8px;
+  vertical-align: -3px;
+  background: var(--c-surface);
+  cursor: default;
+  position: relative;
+  pointer-events: none;
+}
+.content input[type="checkbox"]:checked {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+}
+.content input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0;
+  width: 4px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.content li:has(> input[type="checkbox"]) {
+  list-style: none;
+  margin-left: -1.2em;
+}
+
+/* ===== Bottom nav (mobile) ===== */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-border);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.bottom-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  height: var(--bottom-nav-h);
+}
+.bottom-nav__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: 0;
+  color: var(--c-muted);
+  font: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 6px 4px;
+}
+.bottom-nav__icon {
+  font-size: 1.15rem;
+  line-height: 1;
+  filter: grayscale(0.3);
+  opacity: 0.75;
+}
+.bottom-nav__label {
+  white-space: nowrap;
+}
+.bottom-nav__btn[aria-current="page"] {
+  color: var(--c-accent-strong);
+}
+.bottom-nav__btn[aria-current="page"] .bottom-nav__icon {
+  filter: none;
+  opacity: 1;
+}
+
+/* ===== Error ===== */
+.error {
+  margin: 20px 0;
+  padding: 14px 16px;
+  background: var(--c-accent-soft);
+  border-left: 3px solid var(--c-accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--c-accent-strong);
+  font-size: 0.92rem;
+}
+
+/* ===== Tablet & Desktop ===== */
+@media (min-width: 720px) {
+  body { padding-bottom: 0; }
+  .top-nav { display: block; }
+  .bottom-nav { display: none; }
+  .main { padding: 32px 24px 64px; }
+  .content h1 { font-size: 1.75rem; }
+  .content h2 { font-size: 1.3rem; }
+  .content h3 { font-size: 1.08rem; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

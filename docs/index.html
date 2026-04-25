@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#fbfaf7" />
+  <title>Training Notes</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="./assets/css/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-header__inner">
+      <div class="app-header__brand">
+        <h1 class="app-header__title">Training Notes</h1>
+      </div>
+      <nav class="top-nav" aria-label="主要セクション">
+        <ul id="topNav" class="top-nav__list"></ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="main">
+    <article id="content" class="content" aria-live="polite">
+      <div class="loading">読み込み中…</div>
+    </article>
+  </main>
+
+  <nav class="bottom-nav" aria-label="セクション切り替え">
+    <ul id="bottomNav" class="bottom-nav__list"></ul>
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script src="./assets/js/app.js" defer></script>
+</body>
+</html>

@@ -96,6 +96,14 @@ function rewriteInternalLinks(rootEl) {
   rootEl.querySelectorAll("a[href]").forEach((a) => {
     const href = a.getAttribute("href");
     if (!href) return;
+    if (href.startsWith("#") && !href.startsWith("#/")) {
+      a.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        const target = document.getElementById(href.slice(1));
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      return;
+    }
     const cleaned = href.replace(/^\.\//, "").split("#")[0];
     if (LINK_MAP[cleaned]) {
       a.setAttribute("href", `#/${LINK_MAP[cleaned]}`);

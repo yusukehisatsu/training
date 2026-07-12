@@ -301,6 +301,44 @@ a:hover { color: var(--c-accent); }
   margin-left: -1.2em;
 }
 
+/* ===== 今週のメニュー（ジム・週次チェックリスト） ===== */
+.week-progress {
+  margin: 4px 0 6px;
+  font-weight: 700;
+  color: var(--c-accent-strong);
+}
+.week-progress small {
+  font-weight: 500;
+  color: var(--c-muted);
+}
+.content ul.week-menu {
+  background: var(--c-accent-soft);
+  border: 1px solid var(--c-accent);
+  border-radius: 10px;
+  padding: 12px 16px 12px 20px;
+  margin: 8px 0 4px;
+  list-style: none;
+}
+.content ul.week-menu li {
+  list-style: none;
+  margin-left: 0;
+  padding: 5px 0;
+  font-weight: 600;
+}
+/* 操作可能にしたチェックボックス（既定の pointer-events:none を上書き） */
+.content input[type="checkbox"].interactive {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.content input[type="checkbox"].interactive:checked::after {
+  left: 6px;
+  top: 1px;
+  width: 5px;
+  height: 11px;
+}
+
 /* ===== Bottom nav (mobile) ===== */
 .bottom-nav {
   position: fixed;

@@ -118,6 +118,84 @@ function rewriteInternalLinks(rootEl) {
   });
 }
 
+/* ------------------------------------------------------------
+   週次チェックリスト（ジムページ限定・localStorage 保存）
+   終わったパターンにチェックを入れると保存され、毎週月曜0:00に自動リセット。
+   ------------------------------------------------------------ */
+const CHECK_STORE_KEY = "gymWeekChecks";
+const CHECK_WEEK_KEY = "gymWeekStart";
+
+function currentMondayKey() {
+  const now = new Date();
+  const day = now.getDay();               // 0=日 … 6=土
+  const back = day === 0 ? 6 : day - 1;   // 月曜からの経過日数（日曜は前週月曜へ）
+  const m = new Date(now.getFullYear(), now.getMonth(), now.getDate() - back);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${m.getFullYear()}-${pad(m.getMonth() + 1)}-${pad(m.getDate())}`;
+}
+
+function loadWeekChecks() {
+  const week = currentMondayKey();
+  try {
+    if (localStorage.getItem(CHECK_WEEK_KEY) !== week) {
+      // 週が変わった → 全リセット（月曜0:00リセット）
+      localStorage.setItem(CHECK_WEEK_KEY, week);
+      localStorage.setItem(CHECK_STORE_KEY, "{}");
+      return {};
+    }
+    return JSON.parse(localStorage.getItem(CHECK_STORE_KEY) || "{}");
+  } catch (_) {
+    return {};
+  }
+}
+
+function saveWeekChecks(state) {
+  try {
+    localStorage.setItem(CHECK_STORE_KEY, JSON.stringify(state));
+  } catch (_) {
+    /* localStorage 不可の環境では保存をあきらめる（表示は動く） */
+  }
+}
+
+function updateWeekProgress(boxes) {
+  const list = boxes[0].closest("ul");
+  if (!list) return;
+  const done = boxes.filter((b) => b.checked).length;
+  let el = document.querySelector(".week-progress");
+  if (!el) {
+    el = document.createElement("p");
+    el.className = "week-progress";
+    list.parentNode.insertBefore(el, list);
+  }
+  el.innerHTML =
+    `今週の進捗: ${done} / ${boxes.length} 完了　` +
+    `<small>毎週月曜0:00にリセット</small>`;
+}
+
+function enhanceGymChecklist(rootEl) {
+  const boxes = Array.from(rootEl.querySelectorAll('input[type="checkbox"]'));
+  if (!boxes.length) return;
+
+  const state = loadWeekChecks();
+  const firstList = boxes[0].closest("ul");
+  if (firstList) firstList.classList.add("week-menu");
+
+  boxes.forEach((box) => {
+    const li = box.closest("li");
+    const key = (li ? li.textContent : box.value || "").trim();
+    box.disabled = false;               // marked は disabled で出すため解除
+    box.classList.add("interactive");
+    if (state[key]) box.checked = true;
+    box.addEventListener("change", () => {
+      state[key] = box.checked;
+      saveWeekChecks(state);
+      updateWeekProgress(boxes);
+    });
+  });
+
+  updateWeekProgress(boxes);
+}
+
 async function navigate(sectionId, { push = false } = {}) {
   const section = SECTION_BY_ID[sectionId] || SECTION_BY_ID[DEFAULT_SECTION];
   setActiveNav(section.id);
@@ -129,6 +207,7 @@ async function navigate(sectionId, { push = false } = {}) {
     const md = await loadMarkdown(section);
     container.innerHTML = renderMarkdown(md);
     rewriteInternalLinks(container);
+    if (section.id === "gym") enhanceGymChecklist(container);
     document.title = `${section.label} | Training Notes`;
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
   } catch (err) {

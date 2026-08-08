@@ -266,6 +266,87 @@ a:hover { color: var(--c-accent); }
   font-weight: normal;
 }
 
+/* 意識ポイント欄の「／」区切りキュー（PC では従来どおり 1 行に流す） */
+.content .cue { display: inline; }
+
+/* ===== Tables: スマホ（〜719px）は 1 行 = 1 カードに縦積み ===== */
+@media (max-width: 719px) {
+  .table-wrap--stacked {
+    overflow-x: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+  .content table.table--stackable {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    font-size: 0.9rem;
+  }
+  /* 見出し行は data-label としてセルに出すので視覚的には隠す */
+  .content table.table--stackable thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .content table.table--stackable tbody { display: block; }
+  .content table.table--stackable tbody tr {
+    display: block;
+    margin: 0 0 12px;
+    padding: 12px 14px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-md);
+  }
+  .content table.table--stackable tbody td,
+  .content table.table--stackable tbody th {
+    display: block;
+    padding: 8px 0 0;
+    margin-top: 8px;
+    border: 0;
+    border-top: 1px solid var(--c-border-2);
+  }
+  /* 1列目（種目名など）はカードの見出しとして扱う */
+  .content table.table--stackable tbody tr > :first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--c-accent-strong);
+    line-height: 1.5;
+  }
+  .content table.table--stackable tbody td::before,
+  .content table.table--stackable tbody th::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 2px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--c-muted);
+  }
+  .content table.table--stackable tbody tr > :first-child::before { display: none; }
+  /* 空セル（重量目安が未記入など）はカードから省く */
+  .content table.table--stackable tbody td:empty { display: none; }
+
+  /* 「／」区切りのキューは 1 行 1 項目に */
+  .content table.table--stackable .cue {
+    display: block;
+    padding-left: 1em;
+    text-indent: -1em;
+  }
+  .content table.table--stackable .cue + .cue { margin-top: 3px; }
+  .content table.table--stackable .cue::before {
+    content: "・";
+    color: var(--c-muted);
+  }
+  .content table.table--stackable .cue__sep { display: none; }
+}
+
 /* Task list checkboxes */
 .content input[type="checkbox"] {
   appearance: none;

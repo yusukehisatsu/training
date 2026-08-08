@@ -119,6 +119,73 @@ function rewriteInternalLinks(rootEl) {
 }
 
 /* ------------------------------------------------------------
+   テーブルのモバイル対応
+   スマホ幅では列が潰れて縦長になるため、CSS 側で 1 行 = 1 カード
+   （ラベル付きの縦積み）に切り替える。ここではそのために必要な
+   data-label（＝見出しセルの文言）を各セルへ付与する。
+   あわせて、意識ポイント欄の「／」区切りキューを 1 行ずつ読めるよう
+   <span class="cue"> で包む（PC 表示は従来どおり 1 行に並ぶ）。
+   ------------------------------------------------------------ */
+const CUE_SEPARATOR = "／";
+
+function splitCellCues(cell) {
+  if (!cell.textContent.includes(CUE_SEPARATOR)) return;
+
+  const frag = document.createDocumentFragment();
+  let cue = document.createElement("span");
+  cue.className = "cue";
+
+  const flush = () => {
+    if (cue.childNodes.length) frag.appendChild(cue);
+    cue = document.createElement("span");
+    cue.className = "cue";
+  };
+
+  // appendChild は元の親から移動するので、走査前に配列化しておく
+  Array.from(cell.childNodes).forEach((node) => {
+    if (node.nodeType !== Node.TEXT_NODE || !node.nodeValue.includes(CUE_SEPARATOR)) {
+      cue.appendChild(node); // appendChild が元の位置から移動してくれる
+      return;
+    }
+    const text = node.nodeValue;
+    node.remove(); // 分割後のテキストノードで置き換えるため元のノードは外す
+    text.split(CUE_SEPARATOR).forEach((part, i) => {
+      if (i > 0) {
+        // 区切り文字は直前のキューの末尾に残す（PC 表示を変えないため）
+        const sep = document.createElement("span");
+        sep.className = "cue__sep";
+        sep.textContent = CUE_SEPARATOR;
+        cue.appendChild(sep);
+        flush();
+      }
+      if (part) cue.appendChild(document.createTextNode(part));
+    });
+  });
+  flush();
+
+  cell.appendChild(frag);
+}
+
+function enhanceTables(rootEl) {
+  rootEl.querySelectorAll(".table-wrap > table").forEach((table) => {
+    const headers = Array.from(table.querySelectorAll("thead th")).map((th) =>
+      th.textContent.trim()
+    );
+    if (!headers.length) return;
+
+    table.classList.add("table--stackable");
+    table.parentElement.classList.add("table-wrap--stacked");
+    table.querySelectorAll("tbody tr").forEach((tr) => {
+      Array.from(tr.children).forEach((cell, i) => {
+        if (headers[i]) cell.setAttribute("data-label", headers[i]);
+        // 1列目はカード見出しになるので分割しない（「棘上筋（活性／抑制…）」等の誤分割を避ける）
+        if (i > 0) splitCellCues(cell);
+      });
+    });
+  });
+}
+
+/* ------------------------------------------------------------
    週次チェックリスト（ジムページ限定・localStorage 保存）
    終わったパターンにチェックを入れると保存され、毎週月曜0:00に自動リセット。
    ------------------------------------------------------------ */
@@ -207,6 +274,7 @@ async function navigate(sectionId, { push = false } = {}) {
     const md = await loadMarkdown(section);
     container.innerHTML = renderMarkdown(md);
     rewriteInternalLinks(container);
+    enhanceTables(container);
     if (section.id === "gym") enhanceGymChecklist(container);
     document.title = `${section.label} | Training Notes`;
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });

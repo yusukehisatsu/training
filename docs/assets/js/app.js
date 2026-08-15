@@ -3,15 +3,15 @@
    ============================================================ */
 
 const SECTIONS = [
-  { id: "issues",    label: "課題",       icon: "🎯", file: "./content/issues.md" },
   { id: "gym",       label: "ジム",       icon: "🏋️", file: "./content/menu/gym.md" },
+  { id: "issues",    label: "課題",       icon: "🎯", file: "./content/issues.md" },
   { id: "home",      label: "自宅",       icon: "🏠", file: "./content/menu/home.md" },
   { id: "stretch",   label: "ストレッチ", icon: "🤸", file: "./content/menu/stretch.md" },
   { id: "lifestyle", label: "生活",       icon: "🌿", file: "./content/menu/lifestyle.md" },
 ];
 
 const SECTION_BY_ID = Object.fromEntries(SECTIONS.map((s) => [s.id, s]));
-const DEFAULT_SECTION = "issues";
+const DEFAULT_SECTION = "gym";
 
 const LINK_MAP = {
   "home.md": "home",
@@ -187,7 +187,7 @@ function enhanceTables(rootEl) {
 
 /* ------------------------------------------------------------
    週次チェックリスト（ジムページ限定・localStorage 保存）
-   終わったパターンにチェックを入れると保存され、毎週月曜0:00に自動リセット。
+   終わった種目にチェックを入れると保存され、毎週月曜0:00に自動リセット。
    ------------------------------------------------------------ */
 const CHECK_STORE_KEY = "gymWeekChecks";
 const CHECK_WEEK_KEY = "gymWeekStart";
@@ -224,19 +224,114 @@ function saveWeekChecks(state) {
   }
 }
 
-function updateWeekProgress(boxes) {
-  const list = boxes[0].closest("ul");
-  if (!list) return;
-  const done = boxes.filter((b) => b.checked).length;
-  let el = document.querySelector(".week-progress");
-  if (!el) {
-    el = document.createElement("p");
-    el.className = "week-progress";
-    list.parentNode.insertBefore(el, list);
+// li 直下のテキストだけから種目名を取り出す（ネストした ul / details のキュー文は除く）。
+// 行は「種目名 — セット×レップ @重量」の形式なので、「—」より前だけをキーにする。
+// 重量・レップを書き換えても週の途中でチェックが飛ばないようにするため。
+function exerciseKey(li) {
+  let text = "";
+  for (const node of li.childNodes) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      text += node.nodeValue;
+    } else if (
+      node.nodeType === Node.ELEMENT_NODE &&
+      !["UL", "OL", "DETAILS"].includes(node.tagName)
+    ) {
+      text += node.textContent;
+    }
   }
-  el.innerHTML =
-    `今週の進捗: ${done} / ${boxes.length} 完了　` +
+  return text.split("—")[0].trim();
+}
+
+// ウォーミングアップのセクション（h2〜次の h2 の手前）を折りたたみに変換（デフォルト閉）
+function collapseWarmup(rootEl) {
+  const h2 = Array.from(rootEl.querySelectorAll("h2")).find((h) =>
+    h.textContent.includes("ウォーミングアップ")
+  );
+  if (!h2) return;
+
+  const details = document.createElement("details");
+  details.className = "warmup";
+  const summary = document.createElement("summary");
+  summary.textContent = h2.textContent;
+  details.appendChild(summary);
+
+  let node = h2.nextSibling;
+  while (node && !(node.nodeType === Node.ELEMENT_NODE && node.tagName === "H2")) {
+    const next = node.nextSibling;
+    details.appendChild(node);
+    node = next;
+  }
+  h2.replaceWith(details);
+}
+
+// 種目 li 内のネスト箇条書き（- 意識ポイント → キュー）を折りたたみに変換（デフォルト閉）
+function collapseCues(rootEl) {
+  rootEl.querySelectorAll("li").forEach((li) => {
+    if (!li.querySelector(':scope > input[type="checkbox"]')) return;
+    const sub = li.querySelector(":scope > ul");
+    if (!sub) return;
+
+    // 「- 意識ポイント」ラベル行の下にキューがぶら下がる構造を想定
+    const label = sub.children.length === 1 ? sub.children[0] : null;
+    const inner = label ? label.querySelector(":scope > ul") : null;
+
+    const details = document.createElement("details");
+    details.className = "cues";
+    const summary = document.createElement("summary");
+    if (inner) {
+      const clone = label.cloneNode(true);
+      clone.querySelectorAll("ul, ol").forEach((u) => u.remove());
+      summary.textContent = clone.textContent.trim() || "意識ポイント";
+      details.appendChild(summary);
+      details.appendChild(inner);
+      sub.replaceWith(details);
+    } else {
+      summary.textContent = "意識ポイント";
+      details.appendChild(summary);
+      details.appendChild(sub); // sub を details 内へ移動
+      li.appendChild(details);
+    }
+  });
+}
+
+function updateWeekProgress(rootEl, boxes) {
+  const done = boxes.filter((b) => b.checked).length;
+  const pct = boxes.length ? Math.round((done / boxes.length) * 100) : 0;
+
+  // 全体クリア率（ページ最上部・プログレスバー）
+  let el = rootEl.querySelector(".week-progress");
+  if (!el) {
+    el = document.createElement("div");
+    el.className = "week-progress";
+    el.innerHTML =
+      '<div class="week-progress__bar"><div class="week-progress__fill"></div></div>' +
+      '<p class="week-progress__text"></p>';
+    const h1 = rootEl.querySelector("h1");
+    if (h1) h1.after(el);
+    else rootEl.insertBefore(el, rootEl.firstChild);
+  }
+  el.querySelector(".week-progress__fill").style.width = `${pct}%`;
+  el.querySelector(".week-progress__text").innerHTML =
+    `今週のクリア率: ${done} / ${boxes.length} 種目（${pct}%）` +
     `<small>毎週月曜0:00にリセット</small>`;
+
+  // グループ別の分数（各グループ見出しにバッジ表示）
+  rootEl.querySelectorAll("ul.week-menu").forEach((ul) => {
+    let h = ul.previousElementSibling;
+    while (h && !/^H[23]$/.test(h.tagName)) h = h.previousElementSibling;
+    if (!h) return;
+    const groupBoxes = Array.from(ul.querySelectorAll('input[type="checkbox"]'));
+    if (!groupBoxes.length) return;
+    const groupDone = groupBoxes.filter((b) => b.checked).length;
+    let badge = h.querySelector(".group-count");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.className = "group-count";
+      h.appendChild(badge);
+    }
+    badge.textContent = `${groupDone}/${groupBoxes.length}`;
+    badge.classList.toggle("group-count--done", groupDone === groupBoxes.length);
+  });
 }
 
 function enhanceGymChecklist(rootEl) {
@@ -244,23 +339,25 @@ function enhanceGymChecklist(rootEl) {
   if (!boxes.length) return;
 
   const state = loadWeekChecks();
-  const firstList = boxes[0].closest("ul");
-  if (firstList) firstList.classList.add("week-menu");
 
   boxes.forEach((box) => {
     const li = box.closest("li");
-    const key = (li ? li.textContent : box.value || "").trim();
+    if (li) li.classList.add("exercise");
+    const list = box.closest("ul");
+    if (list) list.classList.add("week-menu");
+
+    const key = li ? exerciseKey(li) : (box.value || "").trim();
     box.disabled = false;               // marked は disabled で出すため解除
     box.classList.add("interactive");
     if (state[key]) box.checked = true;
     box.addEventListener("change", () => {
       state[key] = box.checked;
       saveWeekChecks(state);
-      updateWeekProgress(boxes);
+      updateWeekProgress(rootEl, boxes);
     });
   });
 
-  updateWeekProgress(boxes);
+  updateWeekProgress(rootEl, boxes);
 }
 
 async function navigate(sectionId, { push = false } = {}) {
@@ -275,7 +372,11 @@ async function navigate(sectionId, { push = false } = {}) {
     container.innerHTML = renderMarkdown(md);
     rewriteInternalLinks(container);
     enhanceTables(container);
-    if (section.id === "gym") enhanceGymChecklist(container);
+    if (section.id === "gym") {
+      collapseWarmup(container);
+      collapseCues(container);
+      enhanceGymChecklist(container);
+    }
     document.title = `${section.label} | Training Notes`;
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
   } catch (err) {

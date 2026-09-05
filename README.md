@@ -16,6 +16,7 @@
 | --- | --- | --- |
 | 課題 | `docs/content/issues.md` | 中心仮説・部位別の課題・改善優先順位・活性／抑制筋 |
 | ジム | `docs/content/menu/gym.md` | 25 分／毎日の週間サイクル・日別メニュー |
+| ゴルフ | `docs/content/golf.md` | レッスンで教わったことを項目別の意識ポイントに整理した自分用マニュアル |
 | 自宅 | `docs/content/menu/home.md` | 風呂前 5 分ルーチン |
 | ストレッチ | `docs/content/menu/stretch.md` | 入浴中ほぐし／入浴後リリース／寝る前ストレッチ |
 | 生活 | `docs/content/menu/lifestyle.md` | 食事・呼吸法・姿勢・睡眠 |
@@ -24,7 +25,8 @@
 
 ```
 docs/        GitHub Pages 公開対象（HTML/CSS/JS + Markdown データ）
-resource/    一次ソース（ChatGPT 整理・ジムマシン一覧・トレーナーフィードバック原文・提案された種目集）
+resource/    一次ソース（ChatGPT 整理・ジムマシン一覧・トレーナー／ゴルフレッスンのフィードバック原文・提案された種目集）
+.claude/skills/  フィードバック保存などの作業手順（Claude Code スキル）
 README.md    本ファイル
 CLAUDE.md    Claude Code 用のリポジトリガイド
 ```

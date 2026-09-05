@@ -522,7 +522,8 @@ a:hover { color: var(--c-accent); }
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr); /* タブ数に追従（SECTIONS 追加時に列数を触らなくてよい） */
   height: var(--bottom-nav-h);
 }
 .bottom-nav__btn {
@@ -539,7 +540,8 @@ a:hover { color: var(--c-accent); }
   font: inherit;
   font-size: 0.7rem;
   cursor: pointer;
-  padding: 6px 4px;
+  padding: 6px 2px;
+  min-width: 0;
 }
 .bottom-nav__icon {
   font-size: 1.15rem;

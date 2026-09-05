@@ -9,6 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 体の課題（肩こり・反り腰・右ハム張り・左母趾痛・浅い呼吸など）と、それに対する改善方針を整理する
 - 日々のトレーニング／ストレッチメニューを管理する
 - パーソナルトレーナーからのフィードバックを蓄積し、メニューに反映する
+- ゴルフレッスンで教わったことを**項目別の意識ポイント**として整理し、練習・ラウンドの前に読み返す自分用マニュアルを作る（フィードバック原文は `resource/golf/feedback/` に蓄積）
 - 最終的に**GitHub Pages で公開**してパーソナルトレーナーにレビューしてもらうことを想定している
 - ユーザーは解剖学を学習中のため、**筋肉名・関節・動きのメカニズムを科学的なレベル**で記述する方針
 
@@ -22,6 +23,7 @@ docs/       GitHub Pages 公開ディレクトリ（GitHub Pages 設定の Folde
     js/app.js             ハッシュルーター＋Markdown 描画
   content/                公開されるデータソース（HTML/CSS/JS が読み込む Markdown）
     issues.md             現在の課題と解決の方向性
+    golf.md               ゴルフ：レッスンで教わったことの項目別マニュアル
     menu/
       gym.md              ジムメニュー
       home.md             自宅トレーニングメニュー
@@ -29,12 +31,17 @@ docs/       GitHub Pages 公開ディレクトリ（GitHub Pages 設定の Folde
       lifestyle.md        生活習慣（食事・呼吸法・姿勢）
 resource/   外部から取り込んだ参考情報（一次ソース。公開対象外）
   chatgpt.md              身体課題と改善方針の全体像（マスタードキュメント）
-  gym_machine.md     ジムのマシン一覧
-  gym_machine.pdf    マシン一覧の元 PDF
+  gym_machine.md          ジムのマシン一覧
+  gym_machine.pdf         マシン一覧の元 PDF
   trainer/
     feedback/             トレーナーから受けた回答を YYYYMMDD.md で保存（日付不明分は 2025xxxx.md などの形）
     proposed_menu/        トレーナーから提案されたメニュー集（やり方の原典）
       menu_list.md
+  golf/
+    feedback/             ゴルフレッスンのフィードバック原文を YYYYMMDD.md で保存
+.claude/skills/           Claude Code スキル（リポジトリで共有する作業手順）
+  trainer-feedback-record/  トレーナーフィードバックを resource/trainer/feedback/ に保存
+  golf-feedback-record/     ゴルフレッスンのフィードバックを resource/golf/feedback/ に保存
 ```
 
 `docs/content/` 配下の Markdown は GitHub Pages 上で `docs/assets/js/app.js`（marked.js を使うハッシュルーター）から fetch されて描画される「データソース」として扱う。ナビゲーションリンクや表示用の装飾は入れず、内容そのものに集中する。
@@ -54,6 +61,7 @@ python3 -m http.server 8080
 ## 編集時のルール
 
 - **トレーナーフィードバックを反映するときは、元のフィードバックファイルは原文のまま残す**こと。反映先は `docs/content/` 配下を更新する
+- **ゴルフの `docs/content/golf.md` はフィードバックの転記ではなく、項目別（グリップ／アドレス／テイクバック／トップ／ダウンスイング／インパクト／フォロースルー／フィニッシュ）の「意識すべきポイント」に言い換えて積み上げる**（視認性・網羅性を優先）。原文は `golf-feedback-record` スキルで `resource/golf/feedback/YYYYMMDD.md` に保存し、反映時は末尾の「レッスン履歴」表にも 1 行足す
 - 新しいメニューを追加する際は `resource/trainer/proposed_menu/menu_list.md` のフォーマット（`- [ ] メニュー名` + `やり方` のネスト箇条書き）に揃える
 - 解剖学的な筋肉名（例：僧帽筋下部、肩甲下筋、腹横筋、内腹斜筋）は略称ではなく**正式名称**で書く
 - メニュー説明では、**意識すべき部位／避けるべきフォーム**（例：「肩をすくめない」「腰を反らない」「肩甲骨を下制」）を必ず記載する。これがユーザーにとってのコア情報

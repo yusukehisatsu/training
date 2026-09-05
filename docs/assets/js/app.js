@@ -4,6 +4,7 @@
 
 const SECTIONS = [
   { id: "gym",       label: "ジム",       icon: "🏋️", file: "./content/menu/gym.md" },
+  { id: "golf",      label: "ゴルフ",     icon: "⛳", file: "./content/golf.md" },
   { id: "issues",    label: "課題",       icon: "🎯", file: "./content/issues.md" },
   { id: "home",      label: "自宅",       icon: "🏠", file: "./content/menu/home.md" },
   { id: "stretch",   label: "ストレッチ", icon: "🤸", file: "./content/menu/stretch.md" },

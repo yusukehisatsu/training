@@ -1,7 +1,7 @@
 # ============================================================
 # このリポジトリは GitHub Pages（公開元: /docs）として運用する。
-# /docs/ 配下と最小限のメタファイル（README.md / CLAUDE.md / .gitignore /
-# .claude/skills/）以外はリポジトリに含めない方針。
+# git 管理対象は /docs・/resource と最小限のメタファイル
+# （README.md / CLAUDE.md / .gitignore / .claude/skills/）。
 # ============================================================
 
 # macOS
@@ -18,12 +18,8 @@
 .claude/*
 !.claude/skills/
 
-# 内部ソース資料（公開・トレーナー共有の対象外）
-# - resource/chatgpt.md            身体課題マスタ
-# - resource/kachidok_machine.pdf  ジム機材PDF（約6MB）
-# - resource/trainer/feedback/     トレーナー個別フィードバック
-# - resource/trainer/proposed_menu/ 提案メニュー原典
-/resource/
+# resource/ は一次ソースとして git 管理対象。
+# GitHub Pages の公開単位はあくまで /docs のため、Pages 上には出ない。
 
 # 一時ファイル / ログ
 *.log

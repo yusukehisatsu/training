@@ -1,7 +1,7 @@
 # ============================================================
 # このリポジトリは GitHub Pages（公開元: /docs）として運用する。
-# /docs/ 配下と最小限のメタファイル（README.md / CLAUDE.md / .gitignore）
-# 以外はリポジトリに含めない方針。
+# /docs/ 配下と最小限のメタファイル（README.md / CLAUDE.md / .gitignore /
+# .claude/skills/）以外はリポジトリに含めない方針。
 # ============================================================
 
 # macOS
@@ -13,8 +13,10 @@
 *.swp
 *~
 
-# Claude Code ローカル状態
-.claude/
+# Claude Code ローカル状態（settings.local.json 等）は除外。
+# ただし .claude/skills/ 配下はリポジトリで共有する作業手順のため追跡対象にする。
+.claude/*
+!.claude/skills/
 
 # 内部ソース資料（公開・トレーナー共有の対象外）
 # - resource/chatgpt.md            身体課題マスタ

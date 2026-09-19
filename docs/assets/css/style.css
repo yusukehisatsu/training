@@ -430,7 +430,8 @@ a:hover { color: var(--c-accent); }
   border-color: var(--c-accent);
 }
 
-.content ul.week-menu {
+.content ul.week-menu,
+.content ul.warmup-menu {
   background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-md);
@@ -438,14 +439,16 @@ a:hover { color: var(--c-accent); }
   margin: 8px 0 4px;
   list-style: none;
 }
-.content ul.week-menu > li {
+.content ul.week-menu > li,
+.content ul.warmup-menu > li {
   list-style: none;
   margin: 0;
   padding: 10px 0;
   font-weight: 600;
   border-top: 1px solid var(--c-border-2);
 }
-.content ul.week-menu > li:first-child { border-top: 0; }
+.content ul.week-menu > li:first-child,
+.content ul.warmup-menu > li:first-child { border-top: 0; }
 
 /* 意識ポイントの折りたたみ（デフォルト閉） */
 .content details.cues {
@@ -470,6 +473,8 @@ a:hover { color: var(--c-accent); }
   color: var(--c-text-soft);
 }
 .content details.cues li { font-weight: normal; }
+/* ウォーミングアップはチェックボックスがないぶん字下げを詰める */
+.content ul.warmup-menu details.cues { margin-left: 0; }
 
 /* ウォーミングアップの折りたたみ（デフォルト閉） */
 .content details.warmup {

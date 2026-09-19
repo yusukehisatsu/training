@@ -262,13 +262,17 @@ function collapseWarmup(rootEl) {
     details.appendChild(node);
     node = next;
   }
+
+  // 種目一覧は週次チェックリストと同じカード表示にする（チェックボックスは付けない）
+  const list = details.querySelector(":scope > ul");
+  if (list) list.classList.add("warmup-menu");
+
   h2.replaceWith(details);
 }
 
 // 種目 li 内のネスト箇条書き（- 意識ポイント → キュー）を折りたたみに変換（デフォルト閉）
 function collapseCues(rootEl) {
   rootEl.querySelectorAll("li").forEach((li) => {
-    if (!li.querySelector(':scope > input[type="checkbox"]')) return;
     const sub = li.querySelector(":scope > ul");
     if (!sub) return;
 
@@ -276,13 +280,23 @@ function collapseCues(rootEl) {
     const label = sub.children.length === 1 ? sub.children[0] : null;
     const inner = label ? label.querySelector(":scope > ul") : null;
 
+    let labelText = "";
+    if (label) {
+      const clone = label.cloneNode(true);
+      clone.querySelectorAll("ul, ol").forEach((u) => u.remove());
+      labelText = clone.textContent.trim();
+    }
+
+    // 対象は「週次チェックリストの種目」と「意識ポイントを持つ項目（ウォーミングアップ）」だけ。
+    // メモ欄などの入れ子リストを巻き込まないための絞り込み。
+    const hasCheckbox = !!li.querySelector(':scope > input[type="checkbox"]');
+    if (!hasCheckbox && !(inner && labelText.startsWith("意識ポイント"))) return;
+
     const details = document.createElement("details");
     details.className = "cues";
     const summary = document.createElement("summary");
     if (inner) {
-      const clone = label.cloneNode(true);
-      clone.querySelectorAll("ul, ol").forEach((u) => u.remove());
-      summary.textContent = clone.textContent.trim() || "意識ポイント";
+      summary.textContent = labelText || "意識ポイント";
       details.appendChild(summary);
       details.appendChild(inner);
       sub.replaceWith(details);

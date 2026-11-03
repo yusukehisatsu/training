@@ -309,6 +309,28 @@ function collapseCues(rootEl) {
   });
 }
 
+// 「原文」で始まる h3 を折りたたみに変換（デフォルト閉）。レッスン履歴の生データ用。
+function collapseRawSections(rootEl) {
+  rootEl.querySelectorAll("h3").forEach((h3) => {
+    if (!h3.textContent.trim().startsWith("原文")) return;
+
+    const details = document.createElement("details");
+    details.className = "raw";
+    const summary = document.createElement("summary");
+    summary.textContent = h3.textContent;
+    details.appendChild(summary);
+
+    // 次の見出し（h1〜h3）の手前までを details に収める
+    let node = h3.nextSibling;
+    while (node && !(node.nodeType === Node.ELEMENT_NODE && /^H[1-3]$/.test(node.tagName))) {
+      const next = node.nextSibling;
+      details.appendChild(node);
+      node = next;
+    }
+    h3.replaceWith(details);
+  });
+}
+
 function updateWeekProgress(rootEl, boxes) {
   const done = boxes.filter((b) => b.checked).length;
   const pct = boxes.length ? Math.round((done / boxes.length) * 100) : 0;
@@ -391,6 +413,9 @@ async function navigate(sectionId, { push = false } = {}) {
       collapseWarmup(container);
       collapseCues(container);
       enhanceGymChecklist(container);
+    }
+    if (section.id === "golf") {
+      collapseRawSections(container);
     }
     document.title = `${section.label} | Training Notes`;
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });

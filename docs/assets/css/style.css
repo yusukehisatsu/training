@@ -476,6 +476,40 @@ a:hover { color: var(--c-accent); }
 /* ウォーミングアップはチェックボックスがないぶん字下げを詰める */
 .content ul.warmup-menu details.cues { margin-left: 0; }
 
+/* レッスン履歴の原文（デフォルト閉） */
+.content details.raw {
+  margin: 10px 0;
+  padding: 8px 14px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+}
+.content details.raw > summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--c-text-soft);
+  -webkit-user-select: none;
+  user-select: none;
+}
+.content details.raw > summary::-webkit-details-marker { display: none; }
+.content details.raw > summary::before { content: "▸ "; color: var(--c-accent); }
+.content details.raw[open] > summary::before { content: "▾ "; }
+/* 生データは散文なので、コードブロックの暗い配色は使わず折り返して読ませる */
+.content details.raw pre {
+  margin: 10px 0 4px;
+  padding: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.82rem;
+  line-height: 1.8;
+  background: var(--c-surface-2);
+  color: var(--c-text);
+  border: 1px solid var(--c-border);
+}
+.content details.raw pre code { font-family: inherit; }
+
 /* ウォーミングアップの折りたたみ（デフォルト閉） */
 .content details.warmup {
   margin: 24px 0;
